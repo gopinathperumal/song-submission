@@ -1,7 +1,11 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getDatabase, ref, push, serverTimestamp } 
+import { getDatabase, ref, push, serverTimestamp }
   from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
+// 🔒 Submission closes Feb 1, 2026 at 23:59
+const SUBMISSION_END = new Date("2026-02-01T23:59:00");
+
+// 🔥 Firebase config (YOUR PROJECT)
 const firebaseConfig = {
   apiKey: "AIzaSyCfCayk980MnYa0SkpNrij7lJCmY5T-jYw",
   authDomain: "song-selection-52aff.firebaseapp.com",
@@ -15,22 +19,33 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// Submission closes Feb 1, 2026
-const SUBMISSION_END = new Date("2026-02-01T23:59:00");
-
+// 🚀 Submit function
 window.submitSong = async () => {
   const group = document.getElementById("group").value.trim();
-  const song = document.getElementById("song").value.trim();
   const msg = document.getElementById("msg");
   const btn = document.getElementById("btn");
+
+  const songInputs = document.querySelectorAll(".song");
+  const songs = [];
+
+  songInputs.forEach(input => {
+    if (input.value.trim()) {
+      songs.push(input.value.trim());
+    }
+  });
 
   if (new Date() > SUBMISSION_END) {
     alert("Song submission is closed.");
     return;
   }
 
-  if (!group || !song) {
-    alert("Fill all fields");
+  if (!group) {
+    alert("Please enter Group Name");
+    return;
+  }
+
+  if (songs.length === 0) {
+    alert("Please enter at least one song");
     return;
   }
 
@@ -39,17 +54,17 @@ window.submitSong = async () => {
 
   try {
     await push(ref(db, "submissions"), {
-      group,
-      song,
+      group: group,
+      songs: songs,               // 👈 array of max 10 songs
       submitted_at: serverTimestamp()
     });
 
     msg.innerText = "✅ Submitted successfully!";
     document.getElementById("group").value = "";
-    document.getElementById("song").value = "";
-  } catch (e) {
-    console.error(e);
-    msg.innerText = "❌ Error submitting";
+    songInputs.forEach(i => i.value = "");
+  } catch (error) {
+    console.error(error);
+    msg.innerText = "❌ Error submitting. Try again.";
   } finally {
     btn.disabled = false;
   }

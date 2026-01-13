@@ -2,8 +2,8 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Admin – Song Submissions</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -17,10 +17,20 @@
 </script>
 
 <div class="card">
-  <h2>Submissions (First come first)</h2>
+  <h2>Song Submissions (First Come First Serve)</h2>
+
+  <button onclick="downloadCSV()" style="margin-bottom:10px;">
+    ⬇ Download CSV
+  </button>
+
   <table>
     <thead>
-      <tr><th>Group</th><th>Song</th><th>Time</th></tr>
+      <tr>
+        <th>#</th>
+        <th>Group</th>
+        <th>Song</th>
+        <th>Submitted Time</th>
+      </tr>
     </thead>
     <tbody id="list"></tbody>
   </table>
@@ -28,30 +38,57 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getDatabase, ref, get } from
+  "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCfCayk980MnYa0SkpNrij7lJCmY5T-jYw",
   authDomain: "song-selection-52aff.firebaseapp.com",
+  databaseURL: "https://song-selection-52aff-default-rtdb.europe-west1.firebasedatabase.app",
   projectId: "song-selection-52aff",
   storageBucket: "song-selection-52aff.firebasestorage.app",
   messagingSenderId: "907587762868",
-  appId: "1:907587762868:web:681042b334a2a049aaf5e1",
-  measurementId: "G-ZEDNXF3DW9"
+  appId: "1:907587762868:web:681042b334a2a049aaf5e1"
 };
 
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const db = getDatabase(app);
 
-const q = query(collection(db, "submissions"), orderBy("submitted_at", "asc"));
-const snap = await getDocs(q);
+const snapshot = await get(ref(db, "submissions"));
+const data = snapshot.val() || {};
+
+// Convert to array + sort by submitted_at (ascending)
+const rows = Object.values(data)
+  .sort((a, b) => a.submitted_at - b.submitted_at);
 
 const tbody = document.getElementById("list");
-snap.forEach(doc => {
-  const d = doc.data();
-  const t = d.submitted_at?.toDate ? d.submitted_at.toDate().toLocaleString() : "";
-  tbody.innerHTML += `<tr><td>${d.group}</td><td>${d.song}</td><td>${t}</td></tr>`;
+let csvData = "Order,Group,Song,Submitted Time\n";
+
+rows.forEach((d, index) => {
+  const readableTime = new Date(d.submitted_at).toLocaleString();
+
+  tbody.innerHTML += `
+    <tr>
+      <td>${index + 1}</td>
+      <td>${d.group}</td>
+      <td>${d.song}</td>
+      <td>${readableTime}</td>
+    </tr>
+  `;
+
+  csvData += `${index + 1},"${d.group}","${d.song}","${readableTime}"\n`;
 });
+
+// CSV download
+window.downloadCSV = () => {
+  const blob = new Blob([csvData], { type: "text/csv" });
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "song_submissions.csv";
+  a.click();
+  window.URL.revokeObjectURL(url);
+};
 </script>
 
 </body>

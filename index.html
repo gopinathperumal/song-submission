@@ -1,16 +1,42 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Click Test</title>
+  <title>Dance Competition – Song Submission</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
 
-<h2>Button Click Test</h2>
+<h2>Song Submission</h2>
+<p>Each group can submit up to <b>10 songs</b>.</p>
 
-<button onclick="alert('BUTTON CLICK WORKS')">
-  Click Me
-</button>
+<div>
+  <label>Group Name</label><br>
+  <input id="group" type="text" placeholder="Enter group name"><br><br>
+
+  <label>Song Names (max 10)</label><br>
+
+  <input class="song" placeholder="Song 1"><br>
+  <input class="song" placeholder="Song 2"><br>
+  <input class="song" placeholder="Song 3"><br>
+  <input class="song" placeholder="Song 4"><br>
+  <input class="song" placeholder="Song 5"><br>
+  <input class="song" placeholder="Song 6"><br>
+  <input class="song" placeholder="Song 7"><br>
+  <input class="song" placeholder="Song 8"><br>
+  <input class="song" placeholder="Song 9"><br>
+  <input class="song" placeholder="Song 10"><br><br>
+
+  <button id="submitBtn">Submit</button>
+</div>
+
+<p id="msg"></p>
+
+<!-- Firebase CDN (stable) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<script src="script.js"></script>
 
 </body>
 </html>

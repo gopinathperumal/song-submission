@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin – Song Submissions</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<script>
+  const pass = prompt("Enter admin password:");
+  if (pass !== "Gopi") {
+    document.body.innerHTML = "<h2>Access denied</h2>";
+    throw new Error("Access denied");
+  }
+</script>
+
+<div class="card">
+  <h2>Submissions (First come first)</h2>
+  <table>
+    <thead>
+      <tr><th>Group</th><th>Song</th><th>Time</th></tr>
+    </thead>
+    <tbody id="list"></tbody>
+  </table>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCfCayk980MnYa0SkpNrij7lJCmY5T-jYw",
+  authDomain: "song-selection-52aff.firebaseapp.com",
+  projectId: "song-selection-52aff",
+  storageBucket: "song-selection-52aff.firebasestorage.app",
+  messagingSenderId: "907587762868",
+  appId: "1:907587762868:web:681042b334a2a049aaf5e1",
+  measurementId: "G-ZEDNXF3DW9"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const q = query(collection(db, "submissions"), orderBy("submitted_at", "asc"));
+const snap = await getDocs(q);
+
+const tbody = document.getElementById("list");
+snap.forEach(doc => {
+  const d = doc.data();
+  const t = d.submitted_at?.toDate ? d.submitted_at.toDate().toLocaleString() : "";
+  tbody.innerHTML += `<tr><td>${d.group}</td><td>${d.song}</td><td>${t}</td></tr>`;
+});
+</script>
+
+</body>
+</html>

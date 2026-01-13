@@ -26,6 +26,7 @@
       padding: 10px;
       border-bottom: 1px solid #ddd;
       text-align: left;
+      vertical-align: top;
     }
     th {
       background: #fafafa;
@@ -95,14 +96,21 @@
   db.ref("submissions").once("value").then(snapshot => {
     const data = snapshot.val() || {};
 
-    // sort by submitted_at (first come first serve)
-    const rows = Object.values(data)
-      .sort((a, b) => a.submitted_at - b.submitted_at);
+    // ✅ KEEP push key + data together
+    const rows = Object.entries(data)
+      .sort(([, a], [, b]) => {
+        if (a.submitted_at !== b.submitted_at) {
+          return a.submitted_at - b.submitted_at;
+        }
+        // tie-breaker: Firebase push key (lexicographically ordered)
+        return a.__key.localeCompare(b.__key);
+      })
+      .map(([key, value]) => ({ ...value, __key: key }));
 
     rows.forEach((d, index) => {
       const readableTime = new Date(d.submitted_at).toLocaleString();
 
-      // ✅ FIX: support both old (song) and new (songs[])
+      // support both old (song) and new (songs[])
       const songText = Array.isArray(d.songs)
         ? d.songs.join(", ")
         : (d.song || "");

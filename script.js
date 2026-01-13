@@ -1,15 +1,7 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import {
-  getDatabase,
-  ref,
-  push,
-  serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-
-// 🔒 Submission closes Feb 1, 2026 at 23:59
+// 🔒 Submission closes Feb 1, 2026
 const SUBMISSION_END = new Date("2026-02-01T23:59:00");
 
-// 🔥 Firebase configuration
+// 🔥 Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyCfCayk980MnYa0SkpNrij7lJCmY5T-jYw",
   authDomain: "song-selection-52aff.firebaseapp.com",
@@ -21,17 +13,18 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
-// 🚀 Submit handler
-async function submitSong() {
+// 🚀 Submit function (GLOBAL – button can see it)
+function submitSong() {
   const group = document.getElementById("group").value.trim();
   const msg = document.getElementById("msg");
   const btn = document.getElementById("btn");
-  const songInputs = document.querySelectorAll(".song");
 
+  const songInputs = document.querySelectorAll(".song");
   const songs = [];
+
   songInputs.forEach(input => {
     if (input.value.trim()) {
       songs.push(input.value.trim());
@@ -56,25 +49,18 @@ async function submitSong() {
   btn.disabled = true;
   msg.innerText = "Submitting...";
 
-  try {
-    await push(ref(db, "submissions"), {
-      group: group,
-      songs: songs,                 // max 10
-      submitted_at: serverTimestamp()
-    });
-
+  db.ref("submissions").push({
+    group: group,
+    songs: songs,
+    submitted_at: firebase.database.ServerValue.TIMESTAMP
+  }).then(() => {
     msg.innerText = "✅ Submitted successfully!";
     document.getElementById("group").value = "";
-    songInputs.forEach(i => (i.value = ""));
-  } catch (err) {
-    console.error(err);
-    msg.innerText = "❌ Error submitting. Try again.";
-  } finally {
+    songInputs.forEach(i => i.value = "");
     btn.disabled = false;
-  }
+  }).catch(err => {
+    console.error(err);
+    msg.innerText = "❌ Error submitting";
+    btn.disabled = false;
+  });
 }
-
-// 🔗 Attach button listener AFTER DOM is ready
-document.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("btn").addEventListener("click", submitSong);
-});

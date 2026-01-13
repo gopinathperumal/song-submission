@@ -8,35 +8,36 @@
 </head>
 <body>
 
-  <div class="card">
-    <h2>Song Submission</h2>
-    <p>
-      Each group can submit up to <b>10 songs</b>.<br>
-      Submissions close on <b>Feb 1, 2026</b>.
-    </p>
+<div class="card">
+  <h2>Song Submission</h2>
+  <p>Each group can submit up to <b>10 songs</b>.<br>
+     Submissions close on <b>Feb 1, 2026</b>.</p>
 
-    <label>Group Name</label>
-    <input id="group" placeholder="Enter group name">
+  <label>Group Name</label>
+  <input id="group" placeholder="Enter group name">
 
-    <label>Song Names (max 10)</label>
+  <label>Song Names (max 10)</label>
+  <input class="song" placeholder="Song 1">
+  <input class="song" placeholder="Song 2">
+  <input class="song" placeholder="Song 3">
+  <input class="song" placeholder="Song 4">
+  <input class="song" placeholder="Song 5">
+  <input class="song" placeholder="Song 6">
+  <input class="song" placeholder="Song 7">
+  <input class="song" placeholder="Song 8">
+  <input class="song" placeholder="Song 9">
+  <input class="song" placeholder="Song 10">
 
-    <input class="song" placeholder="Song 1">
-    <input class="song" placeholder="Song 2">
-    <input class="song" placeholder="Song 3">
-    <input class="song" placeholder="Song 4">
-    <input class="song" placeholder="Song 5">
-    <input class="song" placeholder="Song 6">
-    <input class="song" placeholder="Song 7">
-    <input class="song" placeholder="Song 8">
-    <input class="song" placeholder="Song 9">
-    <input class="song" placeholder="Song 10">
+  <!-- INLINE click – reliable -->
+  <button id="btn" onclick="submitSong()">Submit</button>
+  <p id="msg"></p>
+</div>
 
-    <button id="btn">Submit</button>
-    <p id="msg"></p>
-  </div>
+<!-- Firebase CDN (classic & stable) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-  <!-- IMPORTANT: module script -->
-  <script type="module" src="script.js"></script>
+<script src="script.js" defer></script>
 
 </body>
 </html>

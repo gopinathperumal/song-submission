@@ -1,7 +1,4 @@
-// 🔒 Submission closes Feb 1, 2026
-const SUBMISSION_END = new Date("2026-02-01T23:59:00");
-
-// 🔥 Firebase config
+// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyCfCayk980MnYa0SkpNrij7lJCmY5T-jYw",
   authDomain: "song-selection-52aff.firebaseapp.com",
@@ -12,15 +9,16 @@ const firebaseConfig = {
   appId: "1:907587762868:web:681042b334a2a049aaf5e1"
 };
 
-// Initialize Firebase
+// Init Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// 🚀 Submit function (GLOBAL – button can see it)
-function submitSong() {
+// Submission close date
+const SUBMISSION_END = new Date("2026-02-01T23:59:00");
+
+document.getElementById("submitBtn").addEventListener("click", () => {
   const group = document.getElementById("group").value.trim();
   const msg = document.getElementById("msg");
-  const btn = document.getElementById("btn");
 
   const songInputs = document.querySelectorAll(".song");
   const songs = [];
@@ -30,11 +28,6 @@ function submitSong() {
       songs.push(input.value.trim());
     }
   });
-
-  if (new Date() > SUBMISSION_END) {
-    alert("Song submission is closed.");
-    return;
-  }
 
   if (!group) {
     alert("Please enter Group Name");
@@ -46,7 +39,11 @@ function submitSong() {
     return;
   }
 
-  btn.disabled = true;
+  if (new Date() > SUBMISSION_END) {
+    alert("Submissions are closed");
+    return;
+  }
+
   msg.innerText = "Submitting...";
 
   db.ref("submissions").push({
@@ -57,10 +54,8 @@ function submitSong() {
     msg.innerText = "✅ Submitted successfully!";
     document.getElementById("group").value = "";
     songInputs.forEach(i => i.value = "");
-    btn.disabled = false;
   }).catch(err => {
     console.error(err);
     msg.innerText = "❌ Error submitting";
-    btn.disabled = false;
   });
-}
+});
